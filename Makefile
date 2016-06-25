@@ -1,9 +1,7 @@
-#auther Xiaobin Zheng, xzheng19, 668374748
+#auther Xiaobin Zheng, xzheng19
 EXECS=chord_sim
 CFLAGS=-g -Wall -Wextra -Wno-unused-parameter -lpthread
-#CFLAGS=-lpthread
 CC=clang++
-#CC=gcc
 
 all: $(EXECS)
 

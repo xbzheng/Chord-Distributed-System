@@ -39,6 +39,4 @@ int backup_key_send(char*message, char*serverport);
 int show_unisend(char *serverport);
 void find_predecessor(int node_num, int * predecessor);
 void send_back_client(char *message);
-//debug purpose
-
 void print_ft(int node_num, int * node_ft);

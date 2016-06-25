@@ -1,4 +1,4 @@
-//auther Xiaobin Zheng, xzheng19, 668374748
+//auther Xiaobin Zheng
 //04-25-16
 #include "chord_sim.h"
 
@@ -9,7 +9,6 @@ void configParser(const char *filename)
 	FILE * file = fopen(filename, "r");
 	if (file == NULL)
         exit(EXIT_FAILURE);
-
 	char * line = NULL;
 	size_t buf_len = 0;
 	int index = -1;
@@ -32,7 +31,6 @@ void configParser(const char *filename)
 		else 
 		{
 			base_port = atoi(line);
-			//printf("parser base prot is %d\n", base_port);
 		}
 	}
 }
@@ -47,9 +45,8 @@ void update_all_ft(int node_num){
 		
 	}
 }
-//update a particualr node with given node port nummber
+//update a particular node with given node port nummber
 int figure_node_update(char * port){
-	//printf("temp is %s\n", port);
 	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock_fd == -1)
 		return 0;
@@ -60,21 +57,16 @@ int figure_node_update(char * port){
     int get_check = getaddrinfo("127.0.0.1", port, &hints, &result);
     if (get_check !=0)
     {
-    	//puts("call here");
     	close(sock_fd);
 		sock_fd = -1;
     	return 0;
-        // fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(get_check));
     }
     if ( -1 == connect(sock_fd, result->ai_addr, result->ai_addrlen))
    	{
-   		// puts("P does not exist");
    		close(sock_fd);
 		sock_fd = -1;
    		return 0;
    	}
-   	//puts("should not be call");
-
    	char message[7];
    	strcpy(message, "update");
    	message[6]=0;
@@ -86,7 +78,6 @@ int figure_node_update(char * port){
 
 //return 0 if connection false, else return 1;
 int connect_to_node(char * port){
-	//printf("temp is %s\n", port);
 	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock_fd == -1)
 		return 0;
@@ -97,15 +88,12 @@ int connect_to_node(char * port){
     int get_check = getaddrinfo("127.0.0.1", port, &hints, &result);
     if (get_check !=0)
     {
-    	//puts("call here");
     	close(sock_fd);
 		sock_fd = -1;
     	return 0;
-        // fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(get_check));
     }
     if ( -1 == connect(sock_fd, result->ai_addr, result->ai_addrlen))
    	{
-   		//puts("P does not exist");
    		close(sock_fd);
 		sock_fd = -1;
    		return 0;
@@ -162,28 +150,23 @@ int backup_key_send(char*message, char*serverport)
     int get_check = getaddrinfo("127.0.0.1", serverport, &hints, &result);
     if (get_check !=0)
     {
-    	//puts("call here");
     	close(sock_fd);
 		sock_fd = -1;
     	return 0;
-        // fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(get_check));
     }
     if ( -1 == connect(sock_fd, result->ai_addr, result->ai_addrlen))
    	{
-   		// puts("P does not exist");
    		close(sock_fd);
 		sock_fd = -1;
    		return 0;
    	}
-   	//puts("should not be call");
-   	//printf("send backup message is %s\n", message);
    	write(sock_fd, message, strlen(message));
    	close(sock_fd);
 	sock_fd = -1;
    	return 1;
 }
 
-//iterate all existing node to update all the backup key;
+//iterate all existing nodes to update all the backup key;
 void back_up_request(std::list<int>key, int node_num, int next_node){
 	char *serverport = node_to_port(next_node);
 	char *message = (char*) calloc(1000, 1);
@@ -200,7 +183,6 @@ void back_up_request(std::list<int>key, int node_num, int next_node){
 		snprintf(temp, 5, "%d", *it);
 		strcat(message,temp);
 	}
-	//printf("sending back up key from node %d to node %d key is %s\n", node_num, next_node, message);
 	backup_key_send(message, serverport);
 }
 
@@ -213,14 +195,11 @@ void find_predecessor(int node_num, int * predecessor){
 			char *serverport = node_to_port(i);
 			if (1==connect_to_node(serverport))
 			{
-				//printf("find node %d predecessor is %d\n", node_num, *predecessor);
 				*predecessor=i;
 				return;
 			}
 		}
-		
 		*predecessor = 0;
-		//printf("find node %d predecessor is %d\n", node_num, *predecessor);
 		return;
 	}
 	else
@@ -230,13 +209,10 @@ void find_predecessor(int node_num, int * predecessor){
 			char *serverport = node_to_port(i);
 			if (1==connect_to_node(serverport))
 			{
-				//printf("find node %d predecessor is %d\n", node_num, *predecessor);
 				*predecessor=i;
 				return;
 			}
 		}
-		// *predecessor = 0;
-		// printf("find node %d predecessor is %d\n", node_num, *predecessor);
 		return;
 	}	
 }
@@ -258,7 +234,6 @@ char * find_unisend(char * message, char * serverport){
     }
     if ( -1 == connect(sock_fd, result->ai_addr, result->ai_addrlen))
    	{
-   		//if (flag==1)
    		puts("P does not exist");
    		puts("Ready for next command:");
    		close(sock_fd);
@@ -269,7 +244,6 @@ char * find_unisend(char * message, char * serverport){
    	write(sock_fd, message, strlen(message));
 
    	char * buffer = (char*) calloc(1, MESG_SIZE);
-   	//memset(buffer, 0, MESG_SIZE);
    	int len = read(sock_fd, buffer, MESG_SIZE-1);
    	if (len !=-1)
    	{
@@ -281,7 +255,6 @@ char * find_unisend(char * message, char * serverport){
 
 //send helper function for crash command
 void crash_unisend(char* message, char *serverport){
-	//printf("crash node serverport is %s and message is %s\n", serverport, message);
 	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
     struct addrinfo hints, *result = NULL;
     memset(&hints, 0, sizeof(struct addrinfo));
@@ -371,7 +344,6 @@ int unisend(char* message, char* serverport, int flag)
 void* node_init(void * arg){
 	/*init all finger table, key for Node 0*/
 	int node_num = atoi((char*) arg);
-	//printf("node %d is joining the chord\n", node_num);
 	pthread_detach(pthread_self()); // no join() required
 	std::list<int> local_key;
 
@@ -396,7 +368,6 @@ void* node_init(void * arg){
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
     char *node_port = node_to_port(node_num);
-    //printf("new node port %s\n", node_port);
     int get_check = getaddrinfo(NULL, node_port, &hints, &result);
     if (get_check !=0)
     {
@@ -422,8 +393,6 @@ void* node_init(void * arg){
     	char *message=(char*) calloc(1, 20);
 		strcpy(message, "key");
 		strcat(message, (char*)arg);
-		//message[strlen(message)+1] = 0;
-
 		int sock_fd_key = socket(AF_INET, SOCK_STREAM, 0);
 	    struct addrinfo hints, *result = NULL;
 	    memset(&hints, 0, sizeof(struct addrinfo));
@@ -440,17 +409,16 @@ void* node_init(void * arg){
 	   		return 0;
 	   	}
 	   	write(sock_fd_key, message, strlen(message));
-		//printf("key message is %s\n", message);
 		char buffer[MAXBUFLEN];
 		memset(buffer, 0, MAXBUFLEN);
 
-		//presuccsor node following by keys such 
+		//presuccsor node following by keys 
+		//such as: 
 		//123 1 2 3 4 keys: 1,2,3,4,
     	int len = read(sock_fd_key, buffer, MESG_SIZE-1);
     	if (len !=0)
     	{
     		buffer[strlen(buffer)] = '\0';
-    		//printf("key received from successor is %s\n", buffer);
     		char *temp = strstr(buffer, " ");
     		*temp = 0;
     		successor = node_ft[0];
@@ -472,11 +440,9 @@ void* node_init(void * arg){
     	}
 
     }
-    //puts("ready to accept");
     while(1)
     {
     	int fd= accept(sock_fd, NULL, NULL);
-    	//printf("node %d is accepting the connection, fd is %d\n", node_num, fd );
     	if (fd != -1)
     	{
     		char buffer[MAXBUFLEN];
@@ -486,11 +452,8 @@ void* node_init(void * arg){
 	        if (len != 0)
 	    	{
 	    		buffer[strlen(buffer)] =0;
-	    		//printf("node %d, imcoming message is %s\n", node_num, buffer);
-	    		//update the finger table
 	    		if (!strncmp(buffer, "update", 4))
 	    		{
-	    			//printf("node %d updating the ft\n", node_num);
 	    			node_ft = create_ft(node_num);
 	    			find_predecessor(node_num, &predecessor);
 	    		}
@@ -519,20 +482,16 @@ void* node_init(void * arg){
 	    				memset(temp, 0, 5);
 	    				snprintf(temp, 5, "%d", local_key.front());
 	    				strcat(message, temp);
-	    				// bt_key.push_back(local_key.front());
 	    				local_key.pop_front();
 	    			}
 	    			if (zero_flag==1)
 	    				local_key.push_front(0);
-	    			//printf("sent to precessor is %d key is %s\n", predecessor, message);
 	    			write(fd, message, strlen(message));
 	    			close(fd);
 					fd = -1;
-					//puts("key)");
 	    		}
 	    		else if(!strncmp(buffer, "init",4))
 	    		{
-	    			//puts("init call");
 	    			char message[100];
 	    			memset(message, 0, 100);
 	    			strcpy(message, "Ready for next command");
@@ -627,28 +586,13 @@ void* node_init(void * arg){
 	    				local_key_cpy.pop_front();
 	    				strncat(message, " ", 1);
 	    			}
-	    			//print out back up key for debug purpose
-	    			// strcat(message,"\nbt_Keys:");
-	    			// std::list<int> local_key_cpy1 = bt_key;
-	    			// while(local_key_cpy1.size()!=0)
-	    			// {
-	    			// 	char temp[5];
-	    			// 	snprintf(temp, 5, "%d", local_key_cpy1.front());
-	    			// 	strcat(message, temp);
-	    			// 	local_key_cpy1.pop_front();
-	    			// 	strncat(message, " ", 1);
-	    			// }
-	    			//strcat(message, "\nReady for next command");
 	    			write(fd, message, strlen(message));
 	    			close(fd);
 					fd = -1;
 	    		}
-
-	    		//find 8 9
 	    		else if (!strncmp(buffer, "find", 4))
 	    		{
-	    			//check if crashed
-	    			//my successor node is crashed
+	    			//check if my successor node is crashed
 	    			int old_next = node_ft[0];
 	    			node_ft = create_ft(node_num);
 	    			if (old_next != node_ft[0]){
@@ -660,7 +604,7 @@ void* node_init(void * arg){
 	    				strcat(message, temp);
 	    				crash_unisend(message, serverport);
 	    			}
-	    			//my predecessor node is crashed
+	    			//check if my predecessor node is crashed
 	    			char * try_port = node_to_port(predecessor);
 	    			if (0 == connect_to_node(try_port))
 	    			{
@@ -672,9 +616,7 @@ void* node_init(void * arg){
 	    			temp++;
 					char *temp1 = strstr(temp, " ");
 					temp1++;
-					//printf("temp is %s\n", temp1);
 					int key = atoi(temp1);
-					//printf("key is %d\n", key);
 					if (0 == find_key(key, local_key))
 					{
 						char message[100];
@@ -691,7 +633,6 @@ void* node_init(void * arg){
 	    		}
 	    		else if (!strncmp(buffer, "crash", 5))
 	    		{
-	    			//printf("node %d is crashed\n", node_num);
 	    			char message[100];
 	    			memset(message, 0, 100);
 	    			strcpy(message, "Ready for next command");
@@ -706,14 +647,11 @@ void* node_init(void * arg){
 	    	}
     	}
     }
-    //printf("node %d is out of chord\n", node_num);
     return NULL;
 }
 
 
 int main(int argc, char *argv[]){
-	//pthread_mutex_init(&join_mutex, NULL);
-	//pthread_cond_init(&join_cv, NULL);
 	configParser(argv[1]);
 	char node_id[2];
 	strcpy(node_id, "0");
@@ -739,43 +677,24 @@ int main(int argc, char *argv[]){
   			line[strlen(line)-1] = '\0';
 			if (strncmp("join", line, 4) == 0)
 			{
-				//line[strlen(line)] = '\0';
-				//printf("line is %s\n", line);
 				char * new_nodeNum = (char*) calloc(1, strlen(line+5)+1);
 				strcpy(new_nodeNum, line+5);
-				//join_flag =0;
 				pthread_t node_pid;
 				pthread_create(&node_pid, NULL, node_init, (void*) new_nodeNum);
-				
-				//char *new_port = node_to_port(atoi(new_nodeNum));
-				//printf("new port is %s\n", new_port);
-			 //  	// puts("here1");
-			 //  	// puts("here2");
-				// char command[5];
-				// strcpy(command, "init");
-				// command[4]=0;
-				// while (0==unisend(command, init_port,0)){
-				// 	puts("here");
-				// 	sleep(2);
-				// }
-				// puts("done");
 			}
 
 			//find p k command: ask node number p to look for key k;
-			//find 0 200
+			//such as find 0 200
 			else if (strncmp("find", line, 4) == 0)
 			{
 				char *command = (char *) calloc(1, strlen(line)+1);
-				//char command[strlen(line)+1];
 				strcpy(command,line);
-				//command[strlen(line)]=0;
 				char *temp = strstr(line, " ");
 				temp ++;
 				char * temp1= strstr(line, " ");
 				*temp1=0;
 				int num = atoi(temp);
 				char *serverport = node_to_port(num);
-				//printf("find command is %s, serverport is %s\n", command, serverport);
 				unisend(command, serverport,1);
 			}
 			else if (strncmp("crash", line, 5) == 0)
@@ -798,7 +717,8 @@ int main(int argc, char *argv[]){
 				}
 
 			}
-			//command example: show 8
+			//handles show Node Number request
+			//such as show 8
 			else if (strncmp("show", line ,4) == 0)
 			{
 				int node_num = atoi(line+5);
@@ -807,7 +727,7 @@ int main(int argc, char *argv[]){
 				strcpy(command, "show");
 				unisend(command, serverport,1);
 			}
-
+			//sanit check to ensure user's input is valide
 			else if(strncmp("exit", line, 4) == 0)
 				return 0;
 			else 
@@ -817,6 +737,7 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
+//print the content of passing strings to terminal for debuging purpose
 void send_back_client(char *message)
 {
 	puts(message);
