@@ -2,7 +2,6 @@
 //04-25-16
 #include "chord_sim.h"
 
-
 /*Config file parser, to extact parameters. eg, delay range, server ports*/
 void configParser(const char *filename)
 {
