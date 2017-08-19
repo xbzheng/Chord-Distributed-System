@@ -28,12 +28,14 @@ void configParser(const char *filename)
 			 max_delay = atoi(ret_s+1);
 			 index++;
 		}
-		else 
+		else
 		{
 			base_port = atoi(line);
 		}
 	}
 }
+
+
 //update all finger table for all existing nodes
 void update_all_ft(int node_num){
 	for (int i =0; i < 256; i++){
@@ -42,9 +44,11 @@ void update_all_ft(int node_num){
 			char * node_port = node_to_port(i);
 			figure_node_update(node_port);
 		}
-		
+
 	}
 }
+
+
 //update a particular node with given node port nummber
 int figure_node_update(char * port){
 	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -64,7 +68,7 @@ int figure_node_update(char * port){
     if ( -1 == connect(sock_fd, result->ai_addr, result->ai_addrlen))
    	{
    		close(sock_fd);
-		sock_fd = -1;
+			sock_fd = -1;
    		return 0;
    	}
    	char message[7];
@@ -129,7 +133,7 @@ int * create_ft(int node_id)
 	return ft;
 }
 
-//helper function to convert node to node port number  
+//helper function to convert node to node port number
 char * node_to_port(int node_num){
 	char * temp = (char*) calloc(1,5);
 	int x = base_port+node_num;
@@ -214,7 +218,7 @@ void find_predecessor(int node_num, int * predecessor){
 			}
 		}
 		return;
-	}	
+	}
 }
 
 //send helper function for find command
@@ -292,13 +296,13 @@ int find_key(int key, std::list<int> key_list){
 	return 1;
 
 }
-//debuging function call to print out. 
+//debuging function call to print out.
 void print_ft(int node_num, int * node_ft){
 	for (int i = 0; i<8;i++)
 		printf("node_num is %d ft is %d\n", node_num, node_ft[i]);
 }
 
-//send helpfer function show show and find command 
+//send helpfer function show show and find command
 int unisend(char* message, char* serverport, int flag)
 {
 	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -347,7 +351,7 @@ void* node_init(void * arg){
 	pthread_detach(pthread_self()); // no join() required
 	std::list<int> local_key;
 
-	//Node 0 only 
+	//Node 0 only
 	if (node_num == 0)
 	{
 		for (int i = 0; i < 256; i++)
@@ -412,8 +416,8 @@ void* node_init(void * arg){
 		char buffer[MAXBUFLEN];
 		memset(buffer, 0, MAXBUFLEN);
 
-		//presuccsor node following by keys 
-		//such as: 
+		//presuccsor node following by keys
+		//such as:
 		//123 1 2 3 4 keys: 1,2,3,4,
     	int len = read(sock_fd_key, buffer, MESG_SIZE-1);
     	if (len !=0)
@@ -471,7 +475,7 @@ void* node_init(void * arg){
 	    			predecessor = new_predecessor;
 	    			int zero_flag =0;
 	    			if (local_key.front() ==node_num)
-	    			{	
+	    			{
 	    				local_key.pop_front();
 	    				zero_flag =1;
 	    			}
@@ -515,19 +519,19 @@ void* node_init(void * arg){
 	    				bt_key.push_back(atoi(start));
 	    				start = end+1;
 	    				end = strstr(start, " ");
-	    			} 
+	    			}
 	    			bt_key.push_back(atoi(start));
 	    			if (enter_node != node_num)
 	    			{
-	    				back_up_request(local_key, enter_node, node_ft[0]);    				
+	    				back_up_request(local_key, enter_node, node_ft[0]);
 	    			}
-	    			else 
+	    			else
 	    			{
 	    				char * message = (char*) calloc(1, 100);
 	    				strcpy(message, "Ready for next command");
 	    				send_back_client(message);
 	    			}
-	    				
+
 	    			close(fd);
 					fd = -1;
 	    		}
@@ -730,8 +734,8 @@ int main(int argc, char *argv[]){
 			//sanit check to ensure user's input is valide
 			else if(strncmp("exit", line, 4) == 0)
 				return 0;
-			else 
-				perror ("invalid command input\n");	
+			else
+				perror ("invalid command input\n");
   		}
 	}
 	return 0;

@@ -1,3 +1,10 @@
+/*
+Author: Xiaobin (Ivan) Zheng
+Chord Distributed System Protocol Simimulator
+*/
+
+
+/*loading librayies*/
 #include <iostream>
 #include <map>
 #include <list>
@@ -17,10 +24,14 @@
 #include <sys/timeb.h>
 #define MAXBUFLEN 10000
 #define MESG_SIZE 10000
+
+/*globably variables for the simimulator*/
 int m = 8;
 int min_delay;
 int max_delay;
 int base_port;
+
+/*globably functions*/
 void* node_init(void * message);
 void* node_create(void * arg);
 int * create_ft(int node_id);
